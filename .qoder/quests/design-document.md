@@ -41,8 +41,8 @@ graph TB
     D --> H[ViewSets]
     D --> I[URL Routing]
     
-    G --> J[AppSerializer]
-    H --> K[myAppViewSet]
+    G --> J[PostSerializer]
+    H --> K[PostViewSet]
     I --> L[API Endpoints]
 ```
 
@@ -102,39 +102,43 @@ erDiagram
 ```mermaid
 graph LR
     A[HTTP Request] --> B[URL Router]
-    B --> C[myAppViewSet]
-    C --> D[AppSerializer]
+    B --> C[PostViewSet]
+    C --> D[PostSerializer]
     C --> E[myApp Model]
     D --> F[Validation]
     E --> G[Database]
     F --> H[HTTP Response]
 ```
 
-**ViewSet Responsibilities:**
+**PostViewSet Responsibilities:**
 - Handle CRUD operations for myApp objects
 - Automatic pagination and filtering
 - Content negotiation (JSON responses)
 - Error handling and validation
+- Extends ModelViewSet for full CRUD functionality
 
-**Serializer Responsibilities:**
+**PostSerializer Responsibilities:**
 - Data validation and transformation
 - JSON serialization/deserialization
 - Field-level and object-level validation
+- Maps myApp model to JSON format
 
 ### Middleware & Configuration
 
 **Active Middleware Stack:**
 1. `SecurityMiddleware` - Security headers
 2. `SessionMiddleware` - Session management
-3. `CommonMiddleware` - Common functionality
-4. `CsrfViewMiddleware` - CSRF protection
-5. `AuthenticationMiddleware` - User authentication
-6. `MessageMiddleware` - Message framework
-7. `ClickjackingMiddleware` - Clickjacking protection
+3. `CorsMiddleware` - CORS handling for React frontend
+4. `CommonMiddleware` - Common functionality
+5. `CsrfViewMiddleware` - CSRF protection
+6. `AuthenticationMiddleware` - User authentication
+7. `MessageMiddleware` - Message framework
+8. `ClickjackingMiddleware` - Clickjacking protection
 
 **CORS Configuration:**
 - Allowed origins: `https://localhost:5173` (React dev server)
 - Configured for React frontend integration
+- Enables cross-origin requests from React development server
 
 ## Frontend Architecture
 
@@ -272,7 +276,7 @@ sequenceDiagram
     R->>D: HTTP GET /api/myapp/
     D->>DB: SELECT * FROM myapp_myapp
     DB->>D: Return query results
-    D->>D: Serialize data with AppSerializer
+    D->>D: Serialize data with PostSerializer
     D->>R: JSON response with myApp list
     R->>R: Update component state
     R->>R: Re-render UI components
@@ -287,7 +291,7 @@ sequenceDiagram
     participant DB as SQLite Database
     
     R->>D: HTTP POST /api/myapp/ {title, body}
-    D->>D: Validate data with AppSerializer
+    D->>D: Validate data with PostSerializer
     D->>DB: INSERT INTO myapp_myapp
     DB->>D: Return created record
     D->>D: Serialize created object
@@ -330,12 +334,15 @@ class myAppModelTest(TestCase):
     def test_field_validation(self):
         # Test model field constraints
 
-class myAppAPITest(APITestCase):
+class PostViewSetTest(APITestCase):
     def test_get_myapp_list(self):
         # Test GET /api/myapp/
         
     def test_create_myapp(self):
         # Test POST /api/myapp/
+        
+    def test_post_serializer(self):
+        # Test PostSerializer validation
 ```
 
 ### Frontend Testing

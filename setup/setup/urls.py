@@ -21,6 +21,13 @@ from django.urls import path, include
 from myApp import views
 
 urlpatterns = [
+
+    # Main route http://127.0.0.1:8000/
+    path('', views.home, name='home'),
+
+    # Admin route
     path('admin/', admin.site.urls),
+    
+    # API route
     path('api/', include('myApp.api.urls'))
 ]
